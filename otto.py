@@ -17,11 +17,10 @@ player = 1
 #functions
 #=====================================================================
 def clearLines():
-	WConio.gotoxy(0,21)
-	WConio.clreol()
-	WConio.clreol()
-	WConio.gotoxy(0,21)
-
+	for i in range (21,24):
+		WConio.gotoxy(0,i)
+		WConio.clreol()
+	
 def printBoard(array):
 	for h in range(len(array[0])):
 		for w in range(len(array)):
@@ -68,7 +67,8 @@ def printCursor2(gameArray,cursor):
 	print chr(200)+chr(205)+chr(188)	
 
 def selectToken (gameArray,arrows,player):
-	clearLines()
+	WConio.gotoxy(0,23)
+	print "{0:^79}".format("Select one of your tokens to initiate a move.")
 	k=None
 	player=1
 	while k<>"q":
@@ -89,13 +89,13 @@ def selectToken (gameArray,arrows,player):
 
 		if k == " ":# when 'spacebar' entered
 			if ord(gameArray[cursor[0]][cursor[1]])<>player:
-				WConio.gotoxy(40-len(gameArray),21)
-				print "Player {0}, you can only select a space that is already yours.".format(player)
+				WConio.gotoxy(0,21)
+				print "{0:^79}".format("Player {0}, you can only select a space that is already yours.".format(player))
 			else:	
 				clearLines()
-				WConio.gotoxy(40-len(gameArray),21)
+				WConio.gotoxy(0,21)
 				print "{0:^79}".format("Token selected.")
-				print " "*79
+				#print " "*79
 				gameArray = selectDestination(gameArray,cursor,player,arrows)
 				break		
 	
@@ -119,21 +119,22 @@ def selectDestination(gameArray,cursor,player,arrows):
 
 		if k == " ":# when 'spacebar' entered
 				if ord(gameArray[cursor[0]][cursor[1]])<>250:
-					WConio.gotoxy(40-len(gameArray),21)
-					print "Player {0}, you can only move to empty spaces".format(player)
+					WConio.gotoxy(0,21)
+					print "{0:^79}".format("Player {0}, you can only move to empty spaces".format(player))
 				else:
 					finalizeMove(gameArray,oldCursor,cursor,player)
 					break
 	return gameArray		
 
 def finalizeMove(gameArray,oldCursor,cursor,player):
-	clearLines()
-
+	WConio.gotoxy(0,21)
+	if cursor==None:
+		return gameArray
 	print "{0:^79}".format("Token cloned.")
 	gameArray[cursor[0]][cursor[1]]=chr(player)
 	if abs(cursor[0]-oldCursor[0])==2 or abs(cursor[1]-oldCursor[1])==2:
 		gameArray[oldCursor[0]][oldCursor[1]]=chr(250)
-		WConio.gotoxy(40-len(gameArray),21)
+		WConio.gotoxy(0,21)
 		print "{0:^79}".format("Token moved.")
 	time.sleep(0)
 	c=0
@@ -164,13 +165,13 @@ def printScore(gameArray,score):
 	WConio.gotoxy(5,1)
 	print"==="
 	WConio.gotoxy(5,2)
-	print score[0]
+	print "{:^3}".format(score[0])
 	WConio.gotoxy(72,0)
 	print"CPU"
 	WConio.gotoxy(72,1)
 	print"==="
 	WConio.gotoxy(72,2)
-	print score[1]
+	print "{:^3}".format(score[1])
 	
 	#check for wion by skunk
 	if score[0]*score[1]==0:
@@ -210,20 +211,24 @@ def compTurn(gameArray,player):
 								pass
 				compMoves.append([c,x,y])
 	move=compPicksMove(gameArray,sorted(compMoves, reverse=True)) #
-	oldCursor=move[3][:]
-	cursor=[move[1],move[2]]
-	pauselength=0
-	for i in range(5):
-		time.sleep(pauselength)
-		printGrid(gameArray)
-		time.sleep(pauselength)
-		printCursor(gameArray,oldCursor)
-	for i in range(5):
-		time.sleep(pauselength)
-		printGrid(gameArray)
-		printCursor(gameArray,oldCursor)
-		time.sleep(pauselength)
-		printCursor2(gameArray,cursor)	
+	try:
+		oldCursor=move[3][:]
+		cursor=[move[1],move[2]]
+		pauselength=0
+		for i in range(5):
+			time.sleep(pauselength)
+			printGrid(gameArray)
+			time.sleep(pauselength)
+			printCursor(gameArray,oldCursor)
+		for i in range(5):
+			time.sleep(pauselength)
+			printGrid(gameArray)
+			printCursor(gameArray,oldCursor)
+			time.sleep(pauselength)
+			printCursor2(gameArray,cursor)
+	except:
+		oldCursor=None
+		cursor=None	
 	finalizeMove(gameArray,oldCursor,cursor,player)				
 
 def compPicksMove(gameArray,moves):	#picks a move with the greatest # of acquisitions
@@ -256,8 +261,6 @@ def compPicksMove(gameArray,moves):	#picks a move with the greatest # of acquisi
 							if gameArray[i][j]==chr(2):
 								maybeJump=move[:]
 								maybeJump.append([i,j])
-								WConio.gotoxy(60,5)
-								WConio.gotoxy(60,6)
 						except:
 							pass
 	return None
@@ -314,6 +317,7 @@ def selectBoard(arrows):
 				gameArray[m][n]=chr(1)
 				gameArray[p][q]=chr(2)
 				c=c+2
+	clearLines()
 	return (gameArray)
 
 def intro():
@@ -363,7 +367,7 @@ while gameOn==1:
 	gameArray=selectBoard(arrows)
 	cursor = [int(len(gameArray)/2),int(len(gameArray[0])/2)]
 	printBoard(gameArray)
-
+	score = printScore(gameArray,score)
 	#main game loop
 	while score[0]+score[1]<len(gameArray)*len(gameArray[0]) and score[0]<>0 and score[1]<>0:
 		if player == 1:
