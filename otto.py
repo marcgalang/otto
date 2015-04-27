@@ -25,22 +25,22 @@ def clearLines():
 def printBoard(array):
 	for h in range(len(array[0])):
 		for w in range(len(array)):
-			WConio.gotoxy(w*2+1,h*2+1)
+			WConio.gotoxy(w*2+1+40-len(array),h*2+1)
 			print array[w][h]
 			
 def printGrid(array):	
-	WConio.gotoxy(0,0)
+	WConio.gotoxy(40-len(array),0)
 	y=len(array[0])-1
 	x=len(array)-1
 	print chr(218)+(chr(196)+chr(194))*x+chr(196)+chr(191)
 	for i in range(y):
-		WConio.gotoxy(0,i*2+2)
+		WConio.gotoxy(40-len(array),i*2+2)
 		print chr(195)+(chr(196)+chr(197))*x+chr(196)+chr(180)
-	WConio.gotoxy(0,y*2+2)
+	WConio.gotoxy(40-len(array),y*2+2)
 	print chr(192)+(chr(196)+chr(193))*x+chr(196)+chr(217)	
 	for i in range(y+1):
 		for j in range (x+2):
-			WConio.gotoxy(j*2,i*2+1)
+			WConio.gotoxy(j*2+40-len(array),i*2+1)
 			print chr(179)
 		
 def makeArray(size):
@@ -52,19 +52,19 @@ def makeArray(size):
 	return gameArray
 
 def printCursor(gameArray,cursor):
-	WConio.gotoxy(cursor[0]*2,cursor[1]*2)
+	WConio.gotoxy(cursor[0]*2+40-len(gameArray),cursor[1]*2)
 	print chr(201)+chr(205)+chr(187)
-	WConio.gotoxy(cursor[0]*2,cursor[1]*2+1)
+	WConio.gotoxy(cursor[0]*2+40-len(gameArray),cursor[1]*2+1)
 	print chr(186)+gameArray[cursor[0]][cursor[1]]+chr(186)
-	WConio.gotoxy(cursor[0]*2,cursor[1]*2+2)
+	WConio.gotoxy(cursor[0]*2+40-len(gameArray),cursor[1]*2+2)
 	print chr(200)+chr(205)+chr(188)
 	
 def printCursor2(gameArray,cursor):
-	WConio.gotoxy(cursor[0]*2,cursor[1]*2)
+	WConio.gotoxy(cursor[0]*2+40-len(gameArray),cursor[1]*2)
 	print chr(201)+chr(205)+chr(187)
-	WConio.gotoxy(cursor[0]*2,cursor[1]*2+1)
+	WConio.gotoxy(cursor[0]*2+40-len(gameArray),cursor[1]*2+1)
 	print chr(186)+gameArray[cursor[0]][cursor[1]]+chr(186)
-	WConio.gotoxy(cursor[0]*2,cursor[1]*2+2)
+	WConio.gotoxy(cursor[0]*2+40-len(gameArray),cursor[1]*2+2)
 	print chr(200)+chr(205)+chr(188)	
 
 def selectToken (gameArray,arrows,player):
@@ -80,7 +80,7 @@ def selectToken (gameArray,arrows,player):
 			
 		k = WConio.getkey()
 		if k in arrows[0]:
-			WConio.gotoxy(cursor[0]*2+1,cursor[1]*2+1) 
+			WConio.gotoxy(cursor[0]*2+1+40-len(gameArray),cursor[1]*2+1) 
 			printGrid(gameArray) #'erase' cursor icon
 			d=arrows[0].index(k)		
 			cursor[0]=(cursor[0]+arrows[1][d])%len(gameArray)
@@ -89,11 +89,11 @@ def selectToken (gameArray,arrows,player):
 
 		if k == " ":# when 'spacebar' entered
 			if ord(gameArray[cursor[0]][cursor[1]])<>player:
-				WConio.gotoxy(0,21)
+				WConio.gotoxy(40-len(gameArray),21)
 				print "Player {0}, you can only select a space that is already yours.".format(player)
 			else:	
 				clearLines()
-				WConio.gotoxy(0,21)
+				WConio.gotoxy(40-len(gameArray),21)
 				print "{0:^79}".format("Token selected.")
 				print " "*79
 				gameArray = selectDestination(gameArray,cursor,player,arrows)
@@ -105,7 +105,7 @@ def selectDestination(gameArray,cursor,player,arrows):
 	while k<>"q":
 		k = WConio.getkey()
 		if k in arrows[0]:
-			#WConio.gotoxy(cursor[0]*2+1,cursor[1]*2+1) 
+			#WConio.gotoxy(cursor[0]*2+1+40-len(gameArray),cursor[1]*2+1) 
 			printGrid(gameArray) #'erase' cursor icon
 			d=arrows[0].index(k)		
 			cursor[0]=(cursor[0]+arrows[1][d])
@@ -119,7 +119,7 @@ def selectDestination(gameArray,cursor,player,arrows):
 
 		if k == " ":# when 'spacebar' entered
 				if ord(gameArray[cursor[0]][cursor[1]])<>250:
-					WConio.gotoxy(0,21)
+					WConio.gotoxy(40-len(gameArray),21)
 					print "Player {0}, you can only move to empty spaces".format(player)
 				else:
 					finalizeMove(gameArray,oldCursor,cursor,player)
@@ -133,7 +133,7 @@ def finalizeMove(gameArray,oldCursor,cursor,player):
 	gameArray[cursor[0]][cursor[1]]=chr(player)
 	if abs(cursor[0]-oldCursor[0])==2 or abs(cursor[1]-oldCursor[1])==2:
 		gameArray[oldCursor[0]][oldCursor[1]]=chr(250)
-		WConio.gotoxy(0,21)
+		WConio.gotoxy(40-len(gameArray),21)
 		print "{0:^79}".format("Token moved.")
 	time.sleep(0)
 	c=0
@@ -148,7 +148,7 @@ def finalizeMove(gameArray,oldCursor,cursor,player):
 	print "{0:^79}".format("Assimilated {0} of the opponent's tokens.".format(c))	
 	printGrid(gameArray)
 	printBoard(gameArray)
-	WConio.gotoxy(0,21)
+	WConio.gotoxy(40-len(gameArray),21)
 	return gameArray
 	
 def printScore(gameArray,score):
@@ -159,12 +159,18 @@ def printScore(gameArray,score):
 				score[0]+=1
 			elif gameArray[x][y]==chr(2):
 				score[1]+=1	
-	WConio.gotoxy(60,0)
-	print"You vs. CPU"
-	WConio.gotoxy(60,1)
-	print"===     ==="
-	WConio.gotoxy(60,2)
-	print"{0:^3}     {1:^3}".format(score[0],score[1])
+	WConio.gotoxy(5,0)
+	print"You"
+	WConio.gotoxy(5,1)
+	print"==="
+	WConio.gotoxy(5,2)
+	print score[0]
+	WConio.gotoxy(72,0)
+	print"CPU"
+	WConio.gotoxy(72,1)
+	print"==="
+	WConio.gotoxy(72,2)
+	print score[1]
 	
 	#check for wion by skunk
 	if score[0]*score[1]==0:
@@ -204,9 +210,7 @@ def compTurn(gameArray,player):
 								pass
 				compMoves.append([c,x,y])
 	move=compPicksMove(gameArray,sorted(compMoves, reverse=True)) #
-	WConio.gotoxy(45,11)
 	oldCursor=move[3][:]
-	WConio.gotoxy(45,12)
 	cursor=[move[1],move[2]]
 	pauselength=0
 	for i in range(5):
